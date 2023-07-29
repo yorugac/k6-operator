@@ -92,7 +92,7 @@ jobs:
       - name: "Make PR"
         if: ${{ steps.branch.BUNDLE_DIFF }} > 0
         run: |
-          git commit -m 'release: bundle update for ${{env.IMAGETAG}}'
+          # git commit -m 'release: bundle update for ${{env.IMAGETAG}}'
           gh pr create --title "Bundle update for release `${{env.IMAGETAG}}`" --body "" -B main -H release-${{env.IMAGETAG}}/bundle-update
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
