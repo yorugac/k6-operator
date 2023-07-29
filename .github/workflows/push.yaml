@@ -61,3 +61,27 @@ jobs:
           push: true
           file: Dockerfile.starter
           tags: ghcr.io/grafana/k6-operator:latest-starter,ghcr.io/grafana/k6-operator:starter-${{env.IMAGETAG}}
+
+  bundle:
+    name: "Generate bundle"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v2
+      - name: "Bundle"
+        uses: imranismail/setup-kustomize@v2
+        run: |
+          kustomize edit set image ghcr.io/grafana/k6-operator=*:controller-${{env.IMAGETAG}} && kustomize build config/default > bundle.yaml
+      - name: "Branch"
+        run: |
+          git checkout -b release-${{env.IMAGETAG}}/bundle-update
+          git add bundle.yaml
+          git diff --cached | tee diff.file
+          echo "BUNDLE_DIFF=$(wc -c < diff.file)" >> "$GITHUB_OUTPUT"
+      - name: "Make PR"
+        if: ${{ steps.branch.BUNDLE_DIFF }} > 0
+        run: |
+          git commit -m 'release: bundle update for ${{env.IMAGETAG}}'
+          gh pr create --title "Bundle update for release `${{env.IMAGETAG}}`" --body "" -B main -H release-${{env.IMAGETAG}}/bundle-update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
