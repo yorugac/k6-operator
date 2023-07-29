@@ -72,7 +72,7 @@ jobs:
         uses: imranismail/setup-kustomize@v2
       - name: "Bundle"
         run: |
-          kustomize edit set image ghcr.io/grafana/k6-operator=*:controller-${{env.IMAGETAG}} && kustomize build config/default > bundle.yaml
+          cd config/default && kustomize edit set image ghcr.io/grafana/k6-operator=*:controller-${{env.IMAGETAG}} && kustomize build . > bundle.yaml
       - name: "Branch"
         run: |
           git checkout -b release-${{env.IMAGETAG}}/bundle-update
