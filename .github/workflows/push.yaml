@@ -65,6 +65,8 @@ jobs:
   bundle:
     name: "Generate bundle"
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v2
