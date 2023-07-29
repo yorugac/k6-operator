@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: "Build"
+    name: "Build images"
     runs-on: ubuntu-latest
     steps:
       - name: "Build:checkout"
@@ -68,13 +68,21 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v2
+      - name: "Set image tag name"
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "IMAGETAG=${{ github.event.inputs.image_tag }}" >> $GITHUB_ENV
+          else
+            echo "IMAGETAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          fi
       - name: "Setup kustomize"
         uses: imranismail/setup-kustomize@v2
       - name: "Bundle"
         run: |
-          cd config/default && kustomize edit set image ghcr.io/grafana/k6-operator=*:controller-${{env.IMAGETAG}} && kustomize build . > bundle.yaml
+          cd config/default && kustomize edit set image ghcr.io/grafana/k6-operator=*:controller-${{env.IMAGETAG}} && kustomize build . > ../../bundle.yaml
       - name: "Branch"
         run: |
+          ls -l
           git checkout -b release-${{env.IMAGETAG}}/bundle-update
           git add bundle.yaml
           git diff --cached | tee diff.file
