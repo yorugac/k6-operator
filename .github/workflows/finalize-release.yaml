@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  IMAGE_NAME: ghcr.io/grafana/k6-operator
+  IMAGE_NAME: ghcr.io/yorugac/k6-operator
 
 jobs:
   finalize:
@@ -124,6 +124,8 @@ jobs:
           fi
 
       - name: Promote latest image tags
+        env:
+          RELEASE_IMAGE_NAME: ${{ env.IMAGE_NAME }}
         run: |
           ./hack/release/promote-latest-tags.sh \
             "${IMAGE_NAME}:controller-${OPERATOR_VERSION}@${{ steps.build-controller.outputs.digest }}" \
@@ -161,4 +163,4 @@ jobs:
       - name: Trigger Helm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh workflow run helm-release.yaml --ref main
+        run: echo "skip helm publish on fork"
