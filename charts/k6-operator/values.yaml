@@ -317,7 +317,7 @@ manager:
     # type: string
     # @schema
     # manager.image.tag -- controller-manager image tag
-    tag: controller-v1.4.0
+    tag: controller-v9.9.9
     # @schema
     # required: false
     # type: string
