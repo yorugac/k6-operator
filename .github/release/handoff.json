@@ -1,0 +1,6 @@
+{
+  "operator_version": "v9.9.9",
+  "previous_operator_version": "v1.4.0",
+  "chart_version": "9.9.9",
+  "runner_k6_version": "v2.0.0"
+}
