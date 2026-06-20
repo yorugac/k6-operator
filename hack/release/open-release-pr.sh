@@ -17,7 +17,13 @@ branch="$RELEASE_BRANCH"
 
 # check-prepare-preconditions.sh already verified the branch does not exist;
 # `git push -u` below fails naturally if it appeared in the meantime.
-gh label view "$RELEASE_PR_LABEL" > /dev/null
+
+# Check label existence via API.
+repo="${GITHUB_REPOSITORY:-$(gh repo view --json nameWithOwner --jq '.nameWithOwner')}"
+if ! gh api "repos/${repo}/labels/${RELEASE_PR_LABEL}" --silent 2> /dev/null; then
+  release_error "Required label '${RELEASE_PR_LABEL}' does not exist in ${repo}"
+  exit 1
+fi
 
 git checkout -b "$branch"
 # Stage every change produced by `make release-prepare` (new, modified, and
